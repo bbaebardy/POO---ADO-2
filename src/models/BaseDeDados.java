@@ -2,6 +2,7 @@ package models;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,6 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.google.gson.Gson;
 
 public class BaseDeDados {
     private List<Ocorrencia> ocorrenciasNaoProcessadas = new ArrayList<>();
@@ -128,6 +130,32 @@ public class BaseDeDados {
         return placa.matches("[A-Z]{3}[0-9][A-Z0-9][0-9]{2}");
     }
 
+
+    public void exportarMultasComoJSON(String caminhoArquivo) {
+        Gson gson = new Gson();
+        try (FileWriter writer = new FileWriter(caminhoArquivo)) {
+            gson.toJson(multas, writer);
+            System.out.println("Relatório exportado com sucesso em JSON para: " + caminhoArquivo);
+        } catch (IOException e) {
+            System.err.println("Erro ao exportar relatório JSON: " + e.getMessage());
+        }
+    }
+
+    public void exportarMultasComoCSV(String caminhoArquivo) {
+        try (FileWriter writer = new FileWriter(caminhoArquivo)) {
+            writer.append("Placa,Logradouro,Descrição,Nível Multa,Valor Multa\n");
+            for (Multa multa : multas) {
+                writer.append(multa.getPlaca()).append(",")
+                    .append(multa.getLogradouro()).append(",")
+                    .append(multa.getDescricao()).append(",")
+                    .append(String.valueOf(multa.getNivelMulta())).append(",")
+                    .append(String.valueOf(multa.getValorMulta())).append("\n");
+            }
+            System.out.println("Relatório exportado com sucesso em CSV para: " + caminhoArquivo);
+        } catch (IOException e) {
+            System.err.println("Erro ao exportar relatório CSV: " + e.getMessage());
+        }
+    }
 
 
 }

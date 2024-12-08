@@ -25,6 +25,7 @@ public class Main {
             System.out.println("6. Buscar multas por data");
             System.out.println("7. Buscar multas por placa");
             System.out.println("8. Cadastrar nova regra de multa");
+            System.out.println("9. Exportar multas");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
 
@@ -98,6 +99,26 @@ public class Main {
                         System.out.println("Tipo de regra inválido.");
                     }
                     break;
+   
+                    case 9:
+                        System.out.println("Escolha o formato de exportação:");
+                        System.out.println("1. JSON");
+                        System.out.println("2. CSV");
+                        System.out.print("Formato: ");
+                        int formato = scanner.nextInt();
+                        scanner.nextLine();
+                        
+                        System.out.print("Digite o caminho para salvar o relatório: ");
+                        String caminhoArquivo = scanner.nextLine();
+                        
+                        if (formato == 1) {
+                            baseDeDados.exportarMultasComoJSON(caminhoArquivo);
+                        } else if (formato == 2) {
+                            baseDeDados.exportarMultasComoCSV(caminhoArquivo);
+                        } else {
+                            System.out.println("Formato inválido.");
+                        }
+                        break;
 
                 case 0:
                     executar = false;
