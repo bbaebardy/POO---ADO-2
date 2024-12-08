@@ -1,5 +1,8 @@
 package models;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,5 +79,29 @@ public class BaseDeDados {
 
     public List<RegraMulta> getRegrasMulta() {
         return regrasMulta;
+    }
+
+       public void importarOcorrenciasDeArquivo(String caminhoArquivo) {
+        try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                String[] dados = linha.split(",");
+                if (dados.length == 4) {
+                    String placa = dados[0].trim();
+                    String logradouro = dados[1].trim();
+                    String dataHora = dados[2].trim();
+                    int tipoOcorrencia = Integer.parseInt(dados[3].trim());
+                    Ocorrencia ocorrencia = new Ocorrencia(placa, logradouro, dataHora, tipoOcorrencia);
+                    adicionarOcorrencia(ocorrencia);
+                } else {
+                    System.err.println("Linha inválida no arquivo: " + linha);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Erro ao converter tipo de ocorrência: " + e.getMessage());
+        }
+
     }
 }

@@ -1,0 +1,4 @@
+ABC1234,Avenida Paulista,2024-12-06 14:00:00,70
+DEF5678,Rua Augusta,2024-12-07 10:00:00,50
+GHI9012,Avenida Santo Amaro,2024-12-07 18:00:00,6
+JKL3456,Avenida Washington Luiz,2024-12-08 08:30:00,80
