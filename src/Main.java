@@ -1,49 +1,9 @@
 
 
 import models.BaseDeDados;
-
-
-import java.util.Scanner;
-
-public class Main {
-    public static void main(String[] args) {
-        BaseDeDados baseDeDados = new BaseDeDados();
-        baseDeDados.inicializaRegras();
-
-        System.out.println("Importando ocorrências...");
-        baseDeDados.importarOcorrenciasDeArquivo("ocorrencias.txt");
-
-        System.out.println("Ocorrências não processadas:");
-        baseDeDados.listarOcorrenciasNaoProcessadas().forEach(System.out::println);
-
-        System.out.println("\nProcessando ocorrências...");
-        baseDeDados.processarOcorrencias();
-
-        System.out.println("Ocorrências processadas:");
-        baseDeDados.listarOcorrenciasProcessadas().forEach(System.out::println);
-
-        System.out.println("\nMultas geradas:");
-        baseDeDados.listarMultas().forEach(System.out::println);
-
-        // Funcionalidade de busca de multas
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("\nDigite uma data para buscar multas (formato: yyyy-MM-dd):");
-        String data = scanner.nextLine();
-        System.out.println("Multas na data " + data + ":");
-        baseDeDados.buscarMultasPorData(data).forEach(System.out::println);
-
-        System.out.println("\nDigite uma placa para buscar multas:");
-        String placa = scanner.nextLine();
-        System.out.println("Multas para a placa " + placa + ":");
-        baseDeDados.buscarMultasPorPlaca(placa).forEach(System.out::println);
-
-        scanner.close();
-    }
-}
-
-import models.BaseDeDados;
-import models.Ocorrencia;
+import models.RegraCorredorOnibus;
+import models.RegraRodizio;
+import models.RegraVelocidade;
 
 import java.util.Scanner;
 
@@ -64,6 +24,7 @@ public class Main {
             System.out.println("5. Listar multas geradas");
             System.out.println("6. Buscar multas por data");
             System.out.println("7. Buscar multas por placa");
+            System.out.println("8. Cadastrar nova regra de multa"); // Nova opção
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
 
@@ -71,56 +32,51 @@ public class Main {
             scanner.nextLine(); // Consumir a quebra de linha
 
             switch (opcao) {
-                case 1:
-                    System.out.print("Digite o caminho do arquivo: ");
-                    String caminhoArquivo = scanner.nextLine();
-                    baseDeDados.importarOcorrenciasDeArquivo(caminhoArquivo);
-                    System.out.println("Ocorrências importadas com sucesso.");
-                    break;
-
-                case 2:
-                    System.out.print("Digite a placa do veículo: ");
-                    String placa = scanner.nextLine();
-                    System.out.print("Digite o logradouro: ");
-                    String logradouro = scanner.nextLine();
-                    System.out.print("Digite a data e hora (yyyy-MM-dd HH:mm:ss): ");
-                    String dataHora = scanner.nextLine();
-                    System.out.print("Digite o tipo de ocorrência (ex: velocidade ou hora): ");
-                    int tipoOcorrencia = scanner.nextInt();
+                case 8: // Cadastro de nova regra
+                    System.out.println("Escolha o tipo de regra para cadastrar:");
+                    System.out.println("1. Regra de Velocidade");
+                    System.out.println("2. Regra de Rodízio");
+                    System.out.println("3. Regra de Corredor de Ônibus");
+                    System.out.print("Tipo: ");
+                    int tipoRegra = scanner.nextInt();
                     scanner.nextLine(); // Consumir a quebra de linha
 
-                    Ocorrencia novaOcorrencia = new Ocorrencia(placa, logradouro, dataHora, tipoOcorrencia);
-                    baseDeDados.adicionarOcorrencia(novaOcorrencia);
-                    System.out.println("Ocorrência cadastrada com sucesso.");
-                    break;
+                    switch (tipoRegra) {
+                        case 1: // Regra de Velocidade
+                            System.out.print("Digite o limite de velocidade: ");
+                            int limiteVelocidade = scanner.nextInt();
+                            scanner.nextLine(); // Consumir a quebra de linha
+                            System.out.print("Digite o logradouro: ");
+                            String logradouroVelocidade = scanner.nextLine();
+                            baseDeDados.adicionarRegra(new RegraVelocidade(limiteVelocidade, logradouroVelocidade));
+                            break;
 
-                case 3:
-                    baseDeDados.processarOcorrencias();
-                    System.out.println("Ocorrências processadas.");
-                    break;
+                        case 2: // Regra de Rodízio
+                            System.out.print("Digite o dia da semana (1-7): ");
+                            int diaSemana = scanner.nextInt();
+                            scanner.nextLine(); // Consumir a quebra de linha
+                            System.out.print("Digite os logradouros separados por vírgula: ");
+                            String[] logradourosRodizio = scanner.nextLine().split(",");
+                            System.out.print("Digite o dígito final da placa: ");
+                            int digitoFinalPlaca = scanner.nextInt();
+                            scanner.nextLine(); // Consumir a quebra de linha
+                            baseDeDados.adicionarRegra(new RegraRodizio(diaSemana, logradourosRodizio, digitoFinalPlaca));
+                            break;
 
-                case 4:
-                    System.out.println("Ocorrências não processadas:");
-                    baseDeDados.listarOcorrenciasNaoProcessadas().forEach(System.out::println);
-                    break;
+                        case 3: // Regra de Corredor de Ônibus
+                            System.out.print("Digite a hora de início: ");
+                            int horaInicio = scanner.nextInt();
+                            System.out.print("Digite a hora de fim: ");
+                            int horaFim = scanner.nextInt();
+                            scanner.nextLine(); // Consumir a quebra de linha
+                            System.out.print("Digite o logradouro: ");
+                            String logradouroOnibus = scanner.nextLine();
+                            baseDeDados.adicionarRegra(new RegraCorredorOnibus(horaInicio, horaFim, logradouroOnibus));
+                            break;
 
-                case 5:
-                    System.out.println("Multas geradas:");
-                    baseDeDados.listarMultas().forEach(System.out::println);
-                    break;
-
-                case 6:
-                    System.out.print("Digite a data (yyyy-MM-dd): ");
-                    String data = scanner.nextLine();
-                    System.out.println("Multas na data " + data + ":");
-                    baseDeDados.buscarMultasPorData(data).forEach(System.out::println);
-                    break;
-
-                case 7:
-                    System.out.print("Digite a placa: ");
-                    String buscaPlaca = scanner.nextLine();
-                    System.out.println("Multas para a placa " + buscaPlaca + ":");
-                    baseDeDados.buscarMultasPorPlaca(buscaPlaca).forEach(System.out::println);
+                        default:
+                            System.out.println("Tipo de regra inválido.");
+                    }
                     break;
 
                 case 0:

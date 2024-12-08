@@ -104,4 +104,9 @@ public class BaseDeDados {
     public List<RegraMulta> getRegrasMulta() {
         return regrasMulta;
     }
+
+    public void adicionarRegra(RegraMulta regra) {
+        regrasMulta.add(regra);
+        System.out.println("Regra adicionada com sucesso: " + regra.obterDescricaoMulta());
+    }
 }
