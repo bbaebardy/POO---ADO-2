@@ -3,6 +3,9 @@ package models;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,4 +112,22 @@ public class BaseDeDados {
         regrasMulta.add(regra);
         System.out.println("Regra adicionada com sucesso: " + regra.obterDescricaoMulta());
     }
+
+       public boolean validarDataHora(String dataHora) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime.parse(dataHora, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            System.err.println("Data e hora inválidas: " + dataHora);
+            return false;
+        }
+    }
+
+    public boolean validarPlaca(String placa) {
+        return placa.matches("[A-Z]{3}[0-9][A-Z0-9][0-9]{2}");
+    }
+
+
+
 }
