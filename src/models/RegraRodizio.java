@@ -13,16 +13,24 @@ public class RegraRodizio extends RegraMulta {
 
     @Override
     public Multa calcularMulta(Ocorrencia ocorrencia) {
+        int nivel = verificaNivelMulta(ocorrencia);
+        if (nivel > 0) {
+            return new Multa(ocorrencia.getPlaca(), String.join(", ", logradouros), obterDescricaoMulta(), nivel);
+        }
         return null;
     }
 
     @Override
     public int verificaNivelMulta(Ocorrencia ocorrencia) {
-        return 0;
+        // Supor que tipoOcorrencia é o dia da semana
+        int dia = ocorrencia.getTipoOcorrencia();
+        int placaFinal = Integer.parseInt(ocorrencia.getPlaca().substring(ocorrencia.getPlaca().length() - 1));
+        return (dia == diaSemana && placaFinal == digitoFinalPlaca) ? 2 : 0;
     }
 
     @Override
     public String obterDescricaoMulta() {
-        return "Multa por desrespeitar rodízio de veículos.";
+        return "Multa por desrespeitar rodízio nos logradouros: " + String.join(", ", logradouros) +
+               ". Dia da semana: " + diaSemana;
     }
 }
