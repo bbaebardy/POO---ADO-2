@@ -77,11 +77,8 @@ public class BaseDeDados {
         return new ArrayList<>(multas);
     }
 
-    public List<RegraMulta> getRegrasMulta() {
-        return regrasMulta;
-    }
-
-       public void importarOcorrenciasDeArquivo(String caminhoArquivo) {
+    // Método para importar ocorrências de um arquivo
+    public void importarOcorrenciasDeArquivo(String caminhoArquivo) {
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
             String linha;
             while ((linha = br.readLine()) != null) {
@@ -102,6 +99,9 @@ public class BaseDeDados {
         } catch (NumberFormatException e) {
             System.err.println("Erro ao converter tipo de ocorrência: " + e.getMessage());
         }
+    }
 
+    public List<RegraMulta> getRegrasMulta() {
+        return regrasMulta;
     }
 }
