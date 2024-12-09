@@ -1,5 +1,4 @@
-package tests;
-
+package test;
 import models.BaseDeDados;
 import models.Ocorrencia;
 import models.Multa;

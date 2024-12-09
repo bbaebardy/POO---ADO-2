@@ -26,12 +26,8 @@ public class RegraVelocidade extends RegraMulta {
     }
 
     @Override
-   
     public String obterDescricaoMulta() {
         return "Multa por excesso de velocidade no logradouro: " + logradouro +
                ", limite de " + limiteVelocidade + " km/h.";
-
-
     }
-
 }
