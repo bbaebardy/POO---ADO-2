@@ -1,15 +1,14 @@
+
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Button;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import rules.RegraVelocidade;
-import rules.RegraRodizio;
-import rules.RegraCorredorOnibus;
+import javafx.scene.control.*;
+import javafx.geometry.Insets;
+import models.*;
 
-public class Main extends Application {
+public class main extends Application {
 
     public static void main(String[] args) {
         launch(args);
@@ -17,52 +16,68 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Criar instâncias das regras
-        RegraVelocidade regraVelocidade = new RegraVelocidade();
-        RegraRodizio regraRodizio = new RegraRodizio();
-        RegraCorredorOnibus regraCorredorOnibus = new RegraCorredorOnibus();
+        // Criar instâncias das regras com os parâmetros necessários
+        RegraVelocidade regraVelocidade = new RegraVelocidade(80, "Avenida Paulista");
+        RegraRodizio regraRodizio = new RegraRodizio(2, new String[]{"Rua 1", "Rua 2"}, 5);
+        RegraCorredorOnibus regraCorredorOnibus = new RegraCorredorOnibus(7, 9, "Avenida Faria Lima");
 
-        // Criar os botões para aplicar as regras
-        Button btnVelocidade = new Button("Aplicar Regra de Velocidade");
-        Button btnRodizio = new Button("Aplicar Regra de Rodízio");
-        Button btnCorredorOnibus = new Button("Aplicar Regra de Corredor de Ônibus");
+        // Criar os campos de entrada para os dados da ocorrência
+        TextField placaField = new TextField();
+        placaField.setPromptText("Placa do Veículo");
 
-        // Ações para os botões
-        btnVelocidade.setOnAction(e -> {
-            // Verifica a regra de velocidade e aplica a multa se necessário
-            if (regraVelocidade.verificarRegra()) {
-                regraVelocidade.aplicarMulta();
-                showAlert("Multa de Velocidade Aplicada", "A multa foi aplicada por excesso de velocidade.");
+        TextField velocidadeField = new TextField();
+        velocidadeField.setPromptText("Velocidade (km/h)");
+
+        ComboBox<Integer> diaSemanaComboBox = new ComboBox<>();
+        diaSemanaComboBox.getItems().addAll(1, 2, 3, 4, 5, 6, 7); // Dias da semana (1 = segunda-feira, 7 = domingo)
+        diaSemanaComboBox.setPromptText("Dia da Semana");
+
+        Spinner<Integer> horaSpinner = new Spinner<>(0, 23, 0);
+        horaSpinner.setPromptText("Hora da Infração");
+
+        Button btnAplicarMulta = new Button("Aplicar Multa");
+
+        // Ação do botão para aplicar as multas
+        btnAplicarMulta.setOnAction(e -> {
+            // Verificar se todos os campos foram preenchidos corretamente
+            String placa = placaField.getText();
+            double velocidade = 0;
+            int diaSemana = diaSemanaComboBox.getValue();
+            int hora = horaSpinner.getValue();
+
+            try {
+                velocidade = Double.parseDouble(velocidadeField.getText());
+            } catch (NumberFormatException ex) {
+                showAlert("Erro", "Por favor, insira um valor numérico válido para a velocidade.");
+                return;
+            }
+
+            if (placa.isEmpty() || diaSemanaComboBox.getValue() == null) {
+                showAlert("Erro", "Por favor, preencha todos os campos.");
+                return;
+            }
+
+            // Criar a ocorrência com os dados fornecidos
+            Ocorrencia ocorrencia = new Ocorrencia(placa, "Algum Logradouro", "2024-12-08 " + hora + ":00:00", 1);
+
+            // Verificar as regras e aplicar as multas
+            if (regraVelocidade.verificarRegra(ocorrencia)) {
+                regraVelocidade.aplicarMulta(ocorrencia);
+            } else if (regraRodizio.verificarRegra(ocorrencia)) {
+                regraRodizio.aplicarMulta(ocorrencia);
+            } else if (regraCorredorOnibus.verificarRegra(ocorrencia)) {
+                regraCorredorOnibus.aplicarMulta(ocorrencia);
             } else {
-                showAlert("Sem Multa", "A velocidade está dentro do limite.");
+                showAlert("Sem Multa", "Não foi detectada nenhuma infração.");
             }
         });
 
-        btnRodizio.setOnAction(e -> {
-            // Verifica a regra de rodízio e aplica a multa se necessário
-            if (regraRodizio.verificarRegra()) {
-                regraRodizio.aplicarMulta();
-                showAlert("Multa de Rodízio Aplicada", "A multa foi aplicada por infringir a regra de rodízio.");
-            } else {
-                showAlert("Sem Multa", "A restrição de rodízio não foi violada.");
-            }
-        });
-
-        btnCorredorOnibus.setOnAction(e -> {
-            // Verifica a regra de corredor de ônibus e aplica a multa se necessário
-            if (regraCorredorOnibus.verificarRegra()) {
-                regraCorredorOnibus.aplicarMulta();
-                showAlert("Multa de Corredor de Ônibus Aplicada", "A multa foi aplicada por transitar no corredor de ônibus.");
-            } else {
-                showAlert("Sem Multa", "Você não transitou no corredor de ônibus.");
-            }
-        });
-
-        // Layout da interface (Usando VBox para organizar os botões)
-        VBox vbox = new VBox(10, btnVelocidade, btnRodizio, btnCorredorOnibus);
-        Scene scene = new Scene(vbox, 300, 200);
+        // Layout da interface
+        VBox vbox = new VBox(10, placaField, velocidadeField, diaSemanaComboBox, horaSpinner, btnAplicarMulta);
+        vbox.setPadding(new Insets(20));
 
         // Configurações da janela
+        Scene scene = new Scene(vbox, 300, 250);
         primaryStage.setTitle("Sistema de Multas");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -70,7 +85,7 @@ public class Main extends Application {
 
     // Função para exibir alertas
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
