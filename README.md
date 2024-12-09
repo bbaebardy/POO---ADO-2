@@ -1,3 +1,9 @@
+Integrantes do Grupo: 
+1. Matheus Farias Dos Santos
+2. Gustavo Alves Marcelino
+3.  Beatriz Bardela Dos Santos
+4.  Luiz Eduardo Brocco De Carvalho
+
 Sistema de Controle de Multas e Ocorrências de Trânsito
 Este software foi desenvolvido para gerenciar ocorrências de trânsito, calcular infrações e gerar relatórios detalhados. O sistema permite importar ocorrências de arquivos, processá-las para aplicar penalidades com base nas regras estabelecidas e exportar relatórios em formatos JSON ou CSV.
 
